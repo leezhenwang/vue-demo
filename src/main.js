@@ -2,8 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import { Button, Select } from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
 import router from './router'
 import store from './store';
 import 'lib-flexible/flexible.js'
@@ -16,10 +14,15 @@ Vue.prototype.$jsonp=jsonp;
 
 Vue.config.productionTip = false
 
-//饿了么ui组件引入
-Vue.use(Button)
-Vue.use(Select)
+//引入vconsole调试工具
+var VConsole = require('vconsole');
+var vConsole = new VConsole();
 
+import VueLazyload from 'vue-lazyload'
+Vue.use(VueLazyload,{
+  preLoad: 1.1,
+  loading:'./assets/images/loading.gif'
+});
 //设置每一个页面的title
 router.beforeEach((to, from, next) => {
   /* 路由发生变化修改页面title */
@@ -29,6 +32,16 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
+//设置移动端点击延迟问题
+const FastClick = require('fastclick')
+FastClick.attach(document.body)
+//引入vux组件
+//使用插件将指向this原型
+import  { ToastPlugin } from 'vux'
+Vue.use(ToastPlugin,{type: 'text',position: 'middle'})
+//不使用插件时，全局注册
+import { PopupPicker } from 'vux'
+Vue.component('popup-picker', PopupPicker)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

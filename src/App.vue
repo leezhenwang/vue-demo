@@ -14,3 +14,7 @@ export default {
 <style lang="scss">
   @import './assets/sass/common.scss';
 </style>
+<style lang = "less">
+  @import '~vux/src/styles/reset.less';
+</style>
+
