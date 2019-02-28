@@ -30,7 +30,39 @@
       
     },
     mounted(){
-      
+      //get请求测试
+      // let params = {
+      //   cityId: 1,
+      //   total: 6,
+      // };
+      // let config = {
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   resultCodeWhiteList:['7001']
+      // }
+      // this.$ajaxGet('https://qa.189jk.cn/api/yygh/recommendHospitals',params,config).then(data=>{
+      //   console.log(data)
+      // })
+      //post请求测试
+      // let config = {
+      //   headers: {
+      //     'Content-Type': 'application/x-www-form-urlencoded',
+      //   },
+      //   resultCodeWhiteList:['7001']
+      // };
+      // this.$ajaxPost('https://qa.189jk.cn/api/yygh/recommendHospitals',params,config).then(data=>{
+      //   console.log(data)
+      // })
+      //jsonp请求测试
+      this.$jsonp('https://api.map.baidu.com/location/ip',{
+        ak:'W9Llj2ckgmVzCETEZhPQ38zAolFIngpt',
+        coor:"gcj02",
+      }).then(data => {
+        console.log(data);
+      }).catch(error => {
+        console.log(error)
+      })
     },
     methods: {
       goVideoList(){

@@ -2,10 +2,10 @@ import Vue from 'vue'
 const video = {
     namespaced: true,
     state: {
-        videoId: 0,
+      videoId: 0,
     },
     mutations: {
-      chnageVideoId(state,id){
+      changeVideoId(state,id){
         state.videoId = id;
       },
     },

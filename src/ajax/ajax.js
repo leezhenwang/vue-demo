@@ -7,20 +7,22 @@ import qs from 'qs';
 import Cookies from 'js-cookie';
 //公共管理数据
 import store from '../store';
-import {compressPic,dataURItoBlob} from '../assets/js/common'
+import {compressPic,dataURItoBlob,getQueryString} from '../common.js'
 
-axios.defaults.timeout = 5000;//可全局定义，也可以在config中定义（优先级比较高）
-axios.defaults.baseURL ='';
+const Axios = axios.create({
+  timeout: 20000,
+  withCredentials: true // 是否允许带cookie等
+});
 // 添加一个请求拦截器，增加参数序列化功能，便于传递参数
-axios.interceptors.request.use(
+Axios.interceptors.request.use(
   config => {
     if (config.method==="post"&&config.headers['Content-Type']==='application/x-www-form-urlencoded') {
       // 参数序列化
       config.data = qs.stringify(config.data);
     }
     // 判断url中是否传递token，有则写入cookie
-    if (common.getQueryString('accessToken')) {
-      Cookies.set("token", common.getQueryString('accessToken'), 90);
+    if (getQueryString('accessToken')) {
+      Cookies.set("token", getQueryString('accessToken'), 90);
     }
     // 判断cookie中是否有token，有则写入请求头中
     let token = Cookies.get("token");
@@ -35,8 +37,8 @@ axios.interceptors.request.use(
 
 const toastWhiteList = [];//后续可在这里添加不需要toast的白名单
 // 添加一个响应拦截器
-axios.interceptors.response.use(response =>{
-  let data = res.data;
+Axios.interceptors.response.use(response =>{
+  let data = response.data;
   // 判断接口响应
   let code = data.resultCode;
   switch(code){
@@ -48,8 +50,8 @@ axios.interceptors.response.use(response =>{
     return Promise.resolve(data);
     // token过期
     case '-10007':
-    if(res.config.resultCodeWhiteList){
-      var result = res.config.resultCodeWhiteList.find((item)=>{
+    if(response.config.resultCodeWhiteList){
+      var result = response.config.resultCodeWhiteList.find((item)=>{
           return item===code;
       });
       if(result){
@@ -70,7 +72,7 @@ axios.interceptors.response.use(response =>{
  */
 export function ajaxGet(url,params={}){
   return new Promise((resolve,reject) => {
-    axios.get(url,{//整个对象为config
+    Axios.get(url,{//整个对象为config
       params:params
     })
     .then(response => {
@@ -90,7 +92,7 @@ export function ajaxGet(url,params={}){
  */
 export function ajaxPost(url,data = {},config){
   return new Promise((resolve,reject) => {
-    axios.post(url,data,config)
+    Axios.post(url,data,config)
       .then(response => {
         resolve(response.data);
       },err => {
@@ -124,8 +126,8 @@ export function uploadPic(vue,url,files,index){
               let blob = dataURItoBlob(newDataURL);
               formdata.append("file", blob, files[index].name);
               params = formdata;
-              axios.post(url,params,config).then( res => {
-                  let data = res.data;
+              Axios.post(url,params,config).then( response => {
+                  let data = response.data;
                   if(data.resultCode=="success") {
                       resolve (data.data);//返回获取的图片id
                   }
@@ -148,11 +150,16 @@ export function uploadPic(vue,url,files,index){
  * @returns {Promise}
  */
 //调用方法
-export function jsonp (url, data, callback) {
-  createJsonp(url, data,callback);
+export function jsonp (url, data, time) {
+  return new Promise((resolve, reject) => {
+    function callback(json){
+      resolve(json)
+    }
+    createJsonp(url, data,callback,time);
+  })
 };
 //动态添加<script> 标签并组建请求url callback为跨域请求成功后回调函数
-function createJsonp(url, data, callback) {
+function createJsonp(url, data, callback, time) {
   var radom = Math.random() * 100;
   var number = parseInt(radom); //随机数字
   var callBackRadom = "jsonpSuccess_" + number; //指定回调函数
@@ -172,7 +179,15 @@ function createJsonp(url, data, callback) {
   }
   script.id = callBackRadom; //指定id 是为了removeJsonp中动态去除<script>标签
   document.getElementsByTagName('head')[0].appendChild(script);
-  removeJsonp(callBackRadom);
+  //超时处理
+  if (time) {
+    setTimeout(function () {
+      console.log('请求超时！')
+      removeJsonp(callBackRadom);
+    }, time);
+  }else{
+    removeJsonp(callBackRadom);
+  }
 }
 //成功后移除动态加载的<script>标签
 function removeJsonp (id) {
