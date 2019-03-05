@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="video-container">
     这里是视频列表页
     <button @click="handleClick">麻烦点我！</button>
     <button-tab>
@@ -36,9 +36,7 @@
       
     },
     mounted(){
-      console.log(this.videoId);
       this.changeVideoId(1)
-      console.log(this.videoId);
       this.$vux.toast.show({
         type: 'text',
         text: '欢迎你进入本页面'
@@ -57,5 +55,5 @@
   }
 </script>
 <style lang='scss'>
-   
+  @import '../../assets/sass/video/videoList.scss'
 </style>

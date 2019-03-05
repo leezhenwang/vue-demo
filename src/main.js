@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import store from './store';
 import 'lib-flexible/flexible.js'
+import './mixin/gloabal';//全局混入一般不使用
 
 import {ajaxPost,ajaxGet,jsonp} from './ajax/ajax.js'
 //定义全局变量,可以直接使用this.$ajaxPost调用
@@ -15,8 +16,8 @@ Vue.prototype.$jsonp=jsonp;
 Vue.config.productionTip = false
 
 //引入vconsole调试工具
-var VConsole = require('vconsole');
-var vConsole = new VConsole();
+// var VConsole = require('vconsole');
+// var vConsole = new VConsole();
 
 import VueLazyload from 'vue-lazyload'
 Vue.use(VueLazyload,{
@@ -29,9 +30,12 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title
   }
-  next()
+  next();
 })
-
+//设置每一次滚动到顶部
+router.afterEach((to, from, next) => {
+  window.scrollTo(0,0)
+})
 //设置移动端点击延迟问题
 const FastClick = require('fastclick')
 FastClick.attach(document.body)

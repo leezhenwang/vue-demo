@@ -1,0 +1,94 @@
+//scss常见用法
+//1、变量
+$color1:#aeaeae;
+.div1{
+  background-color:$color1;
+}
+//变量提升至全局
+#main {
+  $width: 5em !global;
+  width: $width;
+}
+
+#sidebar {
+  width: $width;
+}
+//嵌套引用
+//嵌套引用在其他编程语言中即是字符串插值，需要用#{}进行包裹：
+$left:left;
+.div1{
+  border-#{$left}-width:5px;
+}
+//变量计算
+$left:20px;
+.div1{
+  margin-left:$left+12px;
+}
+//选择器嵌套
+.div1{
+  .span1{
+      height: 12px;
+  }
+  .div2{
+      width: 16px;
+  }
+}
+//属性嵌套
+//border-color
+p {
+  border: {
+    color: red;
+  }
+}
+//父元素引用
+.div1{
+  &:hover{
+      cursor: hand;
+  }
+}
+//代码重用
+.class1{
+  font-size:19px;
+}
+.class2{
+  @extend .class1;
+  color:black;
+}
+//引用外部文件
+@import './home/home.scss';
+//Mixin&Include
+@mixin left{
+  float: left;
+  margin-left: 10px;
+}
+div {
+  @include left;
+}
+//参数与缺省值
+@mixin common($value1,$value2,$defaultValue:12px){
+  display:block;
+  margin-left:$value1;
+  margin-right:$value2;
+  padding:$defaultValue;
+}
+.class1{
+  font-size:16px;
+  @include common(12px,13px,15px);
+}
+.class2{
+  font-size:16px;
+  @include common(12px,13px);
+}
+//循环函数之each
+@each $member in a, b, c, d {
+　.#{$member} {
+    background-image: url("/image/#{$member}.jpg");
+  }
+}
+//自定义函数
+@function double($n) {
+  @return $n * 2;
+}
+#sidebar {
+  width: double(5px);
+}
